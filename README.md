@@ -49,12 +49,20 @@ costs.
   php artisan test
 ```
 
-## First Approach
-
-### View Table
-
-Description: This APIs endpoint retrieves a list of vehicle expenses, including fuel entries, insurance payments, and
+# First Approach
+## View Table Approach
+#### Description:
+This APIs endpoint retrieves a list of vehicle expenses, including fuel entries, insurance payments, and
 services. The data is fetched using a view table that combines information from multiple tables into a unified format.
+
+#### Pros:
+- **Simplified Queries:** Complex joins and aggregations are precomputed, making queries simpler and faster.
+- **Performance:** Querying a view table can be more efficient for read-heavy operations, as the data is already aggregated.
+- **Consistency:** Ensures consistent results as the view is defined in a single place.
+#### Cons:
+- **Data Freshness:** Depending on how the view is maintained, it may not reflect real-time data changes.
+- **Maintenance:** Requires careful management of the view, especially if the underlying tables change frequently.
+- **Storage:** May increase storage requirements as data is duplicated in the view table.
 
 ### Endpoints:
 
@@ -156,13 +164,23 @@ services. The data is fetched using a view table that combines information from 
 }
 ```
 
-## Second Approach
+# Second Approach
+## Query Builder and Relations Approach
 
-### Query Builder and relations
-
-Description: This API endpoint retrieves a list of expenses aggregated from various types (fuel, insurance, service) for
+#### Description:
+This API endpoint retrieves a list of expenses aggregated from various types (fuel, insurance, service) for
 vehicles. The data is queried using Laravel Query Builder, Laravel relations and includes filtering and sorting
 options.
+
+#### Pros:
+- **Real-time Data:** Always works with the most current data from the database.
+- **Flexibility:** Allows for dynamic query construction based on various conditions and relationships.
+- **Granular Control:** Offers fine-grained control over the query logic and performance tuning.
+#### Cons:
+- **Complexity:** Can result in complex and hard-to-maintain query logic, especially with multiple joins and conditions.
+- **Performance:** May be slower compared to precomputed views, especially for large datasets or complex aggregations.
+- **Development Time:** Requires more development effort to construct and optimize queries.
+
 
 ### Endpoints:
 
@@ -273,12 +291,20 @@ options.
 
 ```
 
-## Third Approach
+# Third Approach
 
-### Factory Design Pattern
+## Factory Design Pattern
 
+#### Description:
 This APIs endpoint retrieves an expenses based on various filters. It uses a Factory Design Pattern to handle different
 expense types and query processing.
+
+#### Pros:
+- **Separation of Concerns:** Keeps the creation logic separate from business logic, making the code cleaner and more maintainable.
+- **Flexibility:** Easily extendable to support new types of expenses or data sources.
+#### Cons:
+- **Complexity:** Adds an additional layer of abstraction, which can increase the complexity of the codebase.
+- **Overhead:** May introduce slight overhead in terms of performance and memory usage due to the additional factory layer.
 
 ### Endpoints:
 
