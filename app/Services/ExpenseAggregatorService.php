@@ -120,7 +120,7 @@ class ExpenseAggregatorService
             ->select(
                 'vehicles.id as vehicle_id',
                 'vehicles.name as vehicle_name',
-                'vehicles.plate_number',
+                'vehicles.plate_number as vehicle_plate_number',
                 'type',
                 'cost',
                 'expenses.created_at',

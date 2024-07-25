@@ -6,10 +6,19 @@ use App\Enum\ExpensesEnums;
 use App\Models\Vehicle;
 use Tests\TestCase;
 
+/**
+ * @private string $api
+ */
 class ExpenseAggregatorListTest extends TestCase
 {
     private string $api = '/api/expenses/aggregator';
 
+    /**
+     * Construct API
+     *
+     * @param array|null $query
+     * @return string
+     */
     private function getApi(?array $query = null): string
     {
         if (!empty($query)) {
@@ -18,7 +27,12 @@ class ExpenseAggregatorListTest extends TestCase
         return $this->api;
     }
 
-    public function testValidInputs()
+    /**
+     * Test valid inputs
+     *
+     * @return void
+     */
+    public function testValidInputs(): void
     {
         $vehicle = Vehicle::query()->inRandomOrder()->first();
         $query = [
@@ -37,37 +51,72 @@ class ExpenseAggregatorListTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testValidFilterById()
+    /**
+     * Test valid filter by vehicle_id
+     *
+     * @return void
+     */
+    public function testValidFilterById(): void
     {
         $vehicle = Vehicle::query()->inRandomOrder()->first();
         $query = [
-            'id' => $vehicle->id,
+            'vehicle_id' => $vehicle->id,
         ];
         $response = $this->get($this->getApi($query));
         $response->assertStatus(200);
+
+        $data = $response->json('data');
+        foreach ($data as $item) {
+            $this->assertStringContainsString($vehicle->id, $item['vehicle_id']);
+        }
     }
 
-    public function testValidFilterByName()
+    /**
+     * Test valid filter by vehicle_name
+     *
+     * @return void
+     */
+    public function testValidFilterByName(): void
     {
         $vehicle = Vehicle::query()->inRandomOrder()->first();
         $query = [
-            'vehicle' => $vehicle->name,
+            'vehicle_name' => $vehicle->name,
         ];
         $response = $this->get($this->getApi($query));
         $response->assertStatus(200);
+
+        $data = $response->json('data');
+        foreach ($data as $item) {
+            $this->assertStringContainsString($vehicle->name, $item['vehicle_name']);
+        }
     }
 
-    public function testValidFilterByPlateNumber()
+    /**
+     * Test valid filter by vehicle plate_number
+     *
+     * @return void
+     */
+    public function testValidFilterByPlateNumber(): void
     {
         $vehicle = Vehicle::query()->inRandomOrder()->first();
         $query = [
-            'vehicle' => $vehicle->plate_number,
+            'plate_number' => $vehicle->plate_number,
         ];
         $response = $this->get($this->getApi($query));
         $response->assertStatus(200);
+
+        $data = $response->json('data');
+        foreach ($data as $item) {
+            $this->assertStringContainsString($vehicle->plate_number, $item['vehicle_plate_number']);
+        }
     }
 
-    public function testInvalidInputs()
+    /**
+     * Test invalid inputs
+     *
+     * @return void
+     */
+    public function testInvalidInputs(): void
     {
         $query = [
             'type' => ['InvalidType'],
@@ -80,11 +129,16 @@ class ExpenseAggregatorListTest extends TestCase
         ];
         $response = $this->getJson($this->getApi($query));
 
-        $response->assertStatus(422); // Assuming 422 Unprocessable Entity for validation errors
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors(['type.0', 'min_cost', 'max_cost', 'min_creation_date', 'max_creation_date', 'sort_by', 'sort_direction']);
     }
 
-    public function testEmptyArray()
+    /**
+     * Test empty type array
+     *
+     * @return void
+     */
+    public function testEmptyArray(): void
     {
         $query = [
             'type' => []
@@ -94,7 +148,12 @@ class ExpenseAggregatorListTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testNullableValues()
+    /**
+     * Test nullable values
+     *
+     * @return void
+     */
+    public function testNullableValues(): void
     {
         $query = [
             'type' => null,
@@ -110,7 +169,12 @@ class ExpenseAggregatorListTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testThrottling()
+    /**
+     * Test throttling
+     *
+     * @return void
+     */
+    public function testThrottling(): void
     {
         for ($i = 1; $i <= 10; $i++) {
             $response = $this->get($this->getApi());

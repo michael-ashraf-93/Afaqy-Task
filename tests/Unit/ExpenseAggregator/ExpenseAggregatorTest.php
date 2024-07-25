@@ -6,10 +6,20 @@ use App\Enum\ExpensesEnums;
 use App\Models\Vehicle;
 use Tests\TestCase;
 
+/**
+ * @private string $api
+ */
 class ExpenseAggregatorTest extends TestCase
 {
     private string $api = '/api/expenses/aggregator/vehicles/';
 
+    /**
+     * Construct API
+     *
+     * @param int $vehicleId
+     * @param array|null $query
+     * @return string
+     */
     private function getApi(int $vehicleId, ?array $query = null): string
     {
         $api = $this->api . $vehicleId;
@@ -19,7 +29,12 @@ class ExpenseAggregatorTest extends TestCase
         return $api;
     }
 
-    public function testValidInputs()
+    /**
+     * Test valid inputs
+     *
+     * @return void
+     */
+    public function testValidInputs(): void
     {
         $vehicle = Vehicle::query()->inRandomOrder()->first();
         $query = [
@@ -35,7 +50,12 @@ class ExpenseAggregatorTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testInvalidInputs()
+    /**
+     * Test invalid inputs
+     *
+     * @return void
+     */
+    public function testInvalidInputs(): void
     {
         $vehicle = Vehicle::query()->inRandomOrder()->first();
         $query = [
@@ -49,11 +69,16 @@ class ExpenseAggregatorTest extends TestCase
         ];
         $response = $this->getJson($this->getApi($vehicle->id, $query));
 
-        $response->assertStatus(422); // Assuming 422 Unprocessable Entity for validation errors
+        $response->assertStatus(422);
         $response->assertJsonValidationErrors(['type.0', 'min_cost', 'max_cost', 'min_creation_date', 'max_creation_date', 'sort_by', 'sort_direction']);
     }
 
-    public function testEmptyArray()
+    /**
+     * Test empty type array
+     *
+     * @return void
+     */
+    public function testEmptyArray(): void
     {
         $vehicle = Vehicle::query()->inRandomOrder()->first();
         $query = [
@@ -63,7 +88,12 @@ class ExpenseAggregatorTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testNullableValues()
+    /**
+     * Test nullable values
+     *
+     * @return void
+     */
+    public function testNullableValues(): void
     {
         $vehicle = Vehicle::query()->inRandomOrder()->first();
         $query = [
@@ -80,7 +110,26 @@ class ExpenseAggregatorTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testThrottling()
+    /**
+     * Test vehicle not found
+     *
+     * @return void
+     */
+    public function testVehicleNotFound(): void
+    {
+        $vehicle = Vehicle::factory()->create();
+
+        $response = $this->get($this->getApi($vehicle->id + 1));
+
+        $response->assertStatus(404);
+    }
+
+    /**
+     * Test throttling
+     *
+     * @return void
+     */
+    public function testThrottling(): void
     {
         $vehicleA = Vehicle::query()->inRandomOrder()->first();
         $vehicleB = Vehicle::query()->inRandomOrder()->first();
