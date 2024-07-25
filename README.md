@@ -1,66 +1,381 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## About The App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### Version
 
-## About Laravel
+    php: 8.2
+    laravel: 11.9
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### App Description
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+##### Vehicle Expense Management System
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+This application is designed to efficiently manage and retrieve vehicle expenses using a variety of approaches to suit
+different needs and scenarios. It provides a robust and scalable solution for tracking and analyzing vehicle-related
+costs.
 
-## Learning Laravel
+### Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Multiple Approaches for Retrieving Vehicle Expenses:
+    - View Table: Provides a unified view of vehicle expenses by combining data from multiple tables.
+    - Query Builder and Relations: Uses Laravel’s query builder and Eloquent relationships for flexible and efficient
+      data retrieval.
+    - Factory Design Pattern: Employs the Factory Design Pattern to handle data formatting and retrieval.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Comprehensive Testing:
+    - Includes test cases for all API endpoints to ensure functionality and reliability.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- API Throttling:
+    - List All Vehicle Expenses: Throttled to 5 requests per minute to prevent abuse and ensure performance.
+    - List Expenses for Specific Vehicle: Throttled to 5 requests per minute per vehicle, maintaining performance and
+      preventing excessive load.
 
-## Laravel Sponsors
+## Initialization
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+  composer install
+```
 
-### Premium Partners
+```bash
+  php artisan migrate
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+  php artisan serve
+```
 
-## Contributing
+## Testing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+  php artisan test
+```
 
-## Code of Conduct
+## First Approach
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### View Table
 
-## Security Vulnerabilities
+Description: This APIs endpoint retrieves a list of vehicle expenses, including fuel entries, insurance payments, and
+services. The data is fetched using a view table that combines information from multiple tables into a unified format.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Endpoints:
 
-## License
+### Index
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+##### Description:
+
+###### Retrieve list of vehicle expenses, with the ability of sorting, filtering, and paginating.
+
+`` [GET]: {BaseURL}/api/vehicles/expenses``
+
+##### Query Parameters:
+
+| Parameter           | Type    | DataType  | Description                                                    |
+|:--------------------|---------|:----------|:---------------------------------------------------------------|
+| `type[]`            | `query` | `array`   | **(optional)**. List of types (e.g., fuel, insurance, service) |
+| `vehicle_id`        | `query` | `numeric` | **(optional)**. Vehicle ID to filter                           |
+| `vehicle_name`      | `query` | `string`  | **(optional)**. Vehicle name to filter                         |
+| `plate_number`      | `query` | `string`  | **(optional)**. Vehicle Plate number to filter                 |
+| `min_cost`          | `query` | `numeric` | **(optional)**. Minimum cost filter                            |
+| `max_cost`          | `query` | `numeric` | **(optional)**. Maximum cost filter                            |
+| `min_creation_date` | `query` | `date`    | **(optional)**. Minimum creation date filter                   |
+| `max_creation_date` | `query` | `date`    | **(optional)**. Maximum creation date filter                   |
+| `sort_by`           | `query` | `string`  | **(optional)**. Field to sort by (default: created_at)         |
+| `sort_direction`    | `query` | `string`  | **(optional)**. Sort direction (asc or desc) (default: desc)   |
+| `per_page`          | `query` | `numeric` | **(optional)**. Number of results per page (default: 100)      |
+| `page`              | `query` | `numeric` | **(optional)**. Page number (default: 1)                       |
+
+### Example Request:
+
+#### [GET]
+
+```
+{BaseURL}/api/vehicles/expenses?type[]=fuel&type[]=insurance&type[]=service&vehicle_id=300&vehicle_name=ter&plate_number=90804&min_cost=9&max_cost=100&min_creation_date=2020-01-10&max_creation_date=2000-01-10&sort_by=created_at&sort_direction=asc&per_page=15&page=1
+```
+
+#### Response
+
+```json
+{
+    "data": [
+        {
+            "vehicle_id": 3514,
+            "vehicle_name": "Lorenzo Barge",
+            "vehicle_plate_number": "4708404",
+            "type": "service",
+            "cost": 0,
+            "created_at": "2020-02-27T00:31:24.000000Z"
+        }
+    ]
+}
+```
+
+### Show
+
+##### Description:
+
+###### Retrieve list of expenses for specific vehicle, with the ability of sorting, filtering, and paginating.
+
+`` [GET]: {BaseURL}/api/vehicles/{vehicle}/expenses``
+
+##### Query Parameters:
+
+| Parameter           | Type    | DataType  | Description                                                    |
+|:--------------------|---------|:----------|:---------------------------------------------------------------|
+| `vehicle_id`        | `path`  | `numeric` |                                                                |
+| `type[]`            | `query` | `array`   | **(optional)**. List of types (e.g., fuel, insurance, service) |
+| `min_cost`          | `query` | `numeric` | **(optional)**. Minimum cost filter                            |
+| `max_cost`          | `query` | `numeric` | **(optional)**. Maximum cost filter                            |
+| `min_creation_date` | `query` | `date`    | **(optional)**. Minimum creation date filter                   |
+| `max_creation_date` | `query` | `date`    | **(optional)**. Maximum creation date filter                   |
+| `sort_by`           | `query` | `string`  | **(optional)**. Field to sort by (default: created_at)         |
+| `sort_direction`    | `query` | `string`  | **(optional)**. Sort direction (asc or desc) (default: desc)   |
+| `per_page`          | `query` | `numeric` | **(optional)**. Number of results per page (default: 100)      |
+| `page`              | `query` | `numeric` | **(optional)**. Page number (default: 1)                       |
+
+### Example Request:
+
+#### [GET]
+
+```
+{BaseURL}/api/vehicles/1/expenses?type[]=fuel&type[]=insurance&type[]=service&min_cost=9&max_cost=100&min_creation_date=2020-01-10&max_creation_date=2000-01-10&sort_by=created_at&sort_direction=asc&per_page=15&page=1
+```
+
+#### Response
+
+```json
+{
+    "data": [
+        {
+            "vehicle_id": 3514,
+            "vehicle_name": "Lorenzo Barge",
+            "vehicle_plate_number": "4708404",
+            "type": "service",
+            "cost": 0,
+            "created_at": "2020-02-27T00:31:24.000000Z"
+        }
+    ]
+}
+```
+
+## Second Approach
+
+### Query Builder and relations
+
+Description: This API endpoint retrieves a list of expenses aggregated from various types (fuel, insurance, service) for
+vehicles. The data is queried using Laravel Query Builder, Laravel relations and includes filtering and sorting
+options.
+
+### Endpoints:
+
+### Index
+
+##### Description:
+
+###### Retrieve list of vehicle expenses, with the ability of sorting, filtering, and paginating.
+
+`` [GET]: {BaseURL}/api/expenses/aggregator``
+
+##### Query Parameters:
+
+| Parameter           | Type    | DataType  | Description                                                    |
+|:--------------------|---------|:----------|:---------------------------------------------------------------|
+| `type[]`            | `query` | `array`   | **(optional)**. List of types (e.g., fuel, insurance, service) |
+| `vehicle_id`        | `query` | `numeric` | **(optional)**. Vehicle ID to filter                           |
+| `vehicle_name`      | `query` | `string`  | **(optional)**. Vehicle name to filter                         |
+| `plate_number`      | `query` | `string`  | **(optional)**. Vehicle Plate number to filter                 |
+| `min_cost`          | `query` | `numeric` | **(optional)**. Minimum cost filter                            |
+| `max_cost`          | `query` | `numeric` | **(optional)**. Maximum cost filter                            |
+| `min_creation_date` | `query` | `date`    | **(optional)**. Minimum creation date filter                   |
+| `max_creation_date` | `query` | `date`    | **(optional)**. Maximum creation date filter                   |
+| `sort_by`           | `query` | `string`  | **(optional)**. Field to sort by (default: created_at)         |
+| `sort_direction`    | `query` | `string`  | **(optional)**. Sort direction (asc or desc) (default: desc)   |
+| `per_page`          | `query` | `numeric` | **(optional)**. Number of results per page (default: 100)      |
+| `page`              | `query` | `numeric` | **(optional)**. Page number (default: 1)                       |
+
+##### Example Request:
+
+### [GET]
+
+```
+{BaseURL}/api/expenses/aggregator?type[]=fuel&type[]=insurance&type[]=service&vehicle_id=300&vehicle_name=ter&plate_number=90804&min_cost=9&max_cost=100&min_creation_date=2020-01-10&max_creation_date=2000-01-10&sort_by=created_at&sort_direction=asc&per_page=15&page=1
+```
+
+#### Response
+
+```json
+{
+    "data": [
+        {
+            "vehicle_id": 3514,
+            "vehicle_name": "Lorenzo Barge",
+            "vehicle_plate_number": "4708404",
+            "type": "service",
+            "cost": 0,
+            "created_at": "2020-02-27T00:31:24.000000Z"
+        }
+    ]
+}
+```
+
+### Show
+
+##### Description:
+
+###### Retrieve list of expenses for specific vehicle, with the ability of sorting, filtering, and paginating.
+
+`` [GET]: {BaseURL}/api/expenses/aggregator/vehicles/{vehicle}``
+
+##### Query Parameters:
+
+| Parameter           | Type    | DataType  | Description                                                    |
+|:--------------------|---------|:----------|:---------------------------------------------------------------|
+| `vehicle`           | `path`  | `numeric` |                                                                |
+| `type[]`            | `Query` | `array`   | **(optional)**. List of types (e.g., fuel, insurance, service) |
+| `min_cost`          | `Query` | `numeric` | **(optional)**. Minimum cost filter                            |
+| `max_cost`          | `Query` | `numeric` | **(optional)**. Maximum cost filter                            |
+| `min_creation_date` | `Query` | `date`    | **(optional)**. Minimum creation date filter                   |
+| `max_creation_date` | `Query` | `date`    | **(optional)**. Maximum creation date filter                   |
+| `sort_by`           | `Query` | `string`  | **(optional)**. Field to sort by (default: created_at)         |
+| `sort_direction`    | `Query` | `string`  | **(optional)**. Sort direction (asc or desc) (default: desc)   |
+| `per_page`          | `Query` | `numeric` | **(optional)**. Number of results per page (default: 100)      |
+| `page`              | `Query` | `numeric` | **(optional)**. Page number (default: 1)                       |
+
+### Example Request:
+
+#### [GET]
+
+```
+{BaseURL}/api/expenses/aggregator/vehicles/1?type[]=fuel&type[]=insurance&type[]=service&min_cost=9&max_cost=100&min_creation_date=2020-01-10&max_creation_date=2000-01-10&sort_by=created_at&sort_direction=asc&per_page=15&page=1
+```
+
+#### Response
+
+```json
+{
+    "data": {
+        "vehicle_id": 1,
+        "vehicle_name": "Prof. Garland Lang",
+        "plate_number": "3290804",
+        "created_at": "2020-01-20T11:53:05.000000Z",
+        "total_expenses": 105,
+        "total_fuel_expenses": 12,
+        "total_insurance_expenses": 93,
+        "total_services_expenses": 0,
+        "expenses": [
+            {
+                "vehicle_id": 1,
+                "cost": 0,
+                "created_at": "2020-02-26T06:07:05.000000Z",
+                "type": "service"
+            }
+        ]
+    }
+}
+
+```
+
+## Third Approach
+
+### Factory Design Pattern
+
+This APIs endpoint retrieves an expenses based on various filters. It uses a Factory Design Pattern to handle different
+expense types and query processing.
+
+### Endpoints:
+
+### Index
+
+##### Description:
+
+###### Retrieve list of vehicle expenses, with the ability of sorting, filtering, and paginating.
+
+`` [GET]: {BaseURL}/api/expenses``
+
+##### Query Parameters:
+
+| Parameter           | Type    | DataType  | Description                                                    |
+|:--------------------|---------|:----------|:---------------------------------------------------------------|
+| `type[]`            | `query` | `array`   | **(optional)**. List of types (e.g., fuel, insurance, service) |
+| `vehicle_id`        | `query` | `numeric` | **(optional)**. Vehicle ID to filter                           |
+| `vehicle_name`      | `query` | `string`  | **(optional)**. Vehicle name to filter                         |
+| `plate_number`      | `query` | `string`  | **(optional)**. Vehicle Plate number to filter                 |
+| `min_cost`          | `query` | `numeric` | **(optional)**. Minimum cost filter                            |
+| `max_cost`          | `query` | `numeric` | **(optional)**. Maximum cost filter                            |
+| `min_creation_date` | `query` | `date`    | **(optional)**. Minimum creation date filter                   |
+| `max_creation_date` | `query` | `date`    | **(optional)**. Maximum creation date filter                   |
+| `sort_by`           | `query` | `string`  | **(optional)**. Field to sort by (default: created_at)         |
+| `sort_direction`    | `query` | `string`  | **(optional)**. Sort direction (asc or desc) (default: desc)   |
+| `per_page`          | `query` | `numeric` | **(optional)**. Number of results per page (default: 100)      |
+| `page`              | `query` | `numeric` | **(optional)**. Page number (default: 1)                       |
+
+### Example Request:
+
+#### [GET]
+
+```
+{BaseURL}/api/expenses?type[]=fuel&type[]=insurance&type[]=service&vehicle_id=300&vehicle_name=ter&plate_number=90804&min_cost=9&max_cost=100&min_creation_date=2020-01-10&max_creation_date=2000-01-10&sort_by=created_at&sort_direction=asc&per_page=15&page=1
+```
+
+#### Response
+
+```json
+{
+    "data": [
+        {
+            "vehicle_id": 3514,
+            "vehicle_name": "Lorenzo Barge",
+            "vehicle_plate_number": "4708404",
+            "type": "service",
+            "cost": 0,
+            "created_at": "2020-02-27T00:31:24.000000Z"
+        }
+    ]
+}
+```
+
+### Show
+
+##### Description:
+
+###### Retrieve list of expenses for specific vehicle, with the ability of sorting, filtering, and paginating.
+
+`` [GET]: {BaseURL}/api/expenses/vehicles/{vehicle}``
+
+##### Query Parameters:
+
+| Parameter           | Type    | DataType  | Description                                                    |
+|:--------------------|---------|:----------|:---------------------------------------------------------------|
+| `vehicle`           | `path`  | `numeric` |                                                                |
+| `type[]`            | `query` | `array`   | **(optional)**. List of types (e.g., fuel, insurance, service) |
+| `min_cost`          | `query` | `numeric` | **(optional)**. Minimum cost filter                            |
+| `max_cost`          | `query` | `numeric` | **(optional)**. Maximum cost filter                            |
+| `min_creation_date` | `query` | `date`    | **(optional)**. Minimum creation date filter                   |
+| `max_creation_date` | `query` | `date`    | **(optional)**. Maximum creation date filter                   |
+| `sort_by`           | `query` | `string`  | **(optional)**. Field to sort by (default: created_at)         |
+| `sort_direction`    | `query` | `string`  | **(optional)**. Sort direction (asc or desc) (default: desc)   |
+| `per_page`          | `query` | `numeric` | **(optional)**. Number of results per page (default: 100)      |
+| `page`              | `query` | `numeric` | **(optional)**. Page number (default: 1)                       |
+
+### Example Request:
+
+#### [GET]
+
+```
+{BaseURL}/api/expenses/vehicles/1?type[]=fuel&type[]=insurance&type[]=service&min_cost=9&max_cost=100&min_creation_date=2020-01-10&max_creation_date=2000-01-10&sort_by=created_at&sort_direction=asc&per_page=15&page=1
+```
+
+#### Response
+
+```json
+{
+    "data": [
+        {
+            "vehicle_id": 3514,
+            "vehicle_name": "Lorenzo Barge",
+            "vehicle_plate_number": "4708404",
+            "type": "service",
+            "cost": 0,
+            "created_at": "2020-02-27T00:31:24.000000Z"
+        }
+    ]
+}
+```
